@@ -22,22 +22,42 @@ const urlSchema = new Schema({
 
 const Url = mongoose.model('url', urlSchema);
 
-// Basic Configuration
+// TODO: ADD SOME ERROR HANDLING HERE
+const createAndSaveUrl = (originalUrl) => {
+  const url = new Url({
+    original_url: originalUrl,
+    short_url: 'TEST',
+  });
+
+  url.save();
+};
+
+// TODO: FINISH THIS FUNCTION
+const getOriginalUrl = () => {};
+
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 
 app.use('/public', express.static(`${process.cwd()}/public`));
 
-app.get('/', function (req, res) {
+app.get('/', (req, res) => {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
-// Your first API endpoint
-app.get('/api/hello', function (req, res) {
+app.get('/api/hello', (req, res) => {
   res.json({ greeting: 'hello API' });
 });
 
-app.listen(port, function () {
+app.get('/api/shorturl/:url', (req, res) => {
+  res.json({ test: 'Get API works!' });
+});
+
+app.post('/api/shorturl', (req, res) => {
+  const url = req.body.url;
+  res.json({ test: 'Post API works!' });
+});
+
+app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
