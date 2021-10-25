@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
@@ -41,6 +42,8 @@ app.use(cors());
 
 app.use('/public', express.static(`${process.cwd()}/public`));
 
+app.use(bodyParser.urlencoded({ extended: false }));
+
 app.get('/', (req, res) => {
   res.sendFile(process.cwd() + '/views/index.html');
 });
@@ -50,11 +53,14 @@ app.get('/api/hello', (req, res) => {
 });
 
 app.get('/api/shorturl/:url', (req, res) => {
+  const url = req.params.url;
+  console.log(url);
   res.json({ test: 'Get API works!' });
 });
 
 app.post('/api/shorturl', (req, res) => {
   const url = req.body.url;
+  console.log(url);
   res.json({ test: 'Post API works!' });
 });
 
