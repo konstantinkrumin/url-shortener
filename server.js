@@ -23,18 +23,31 @@ const urlSchema = new Schema({
 
 const Url = mongoose.model('url', urlSchema);
 
-// TODO: ADD SOME ERROR HANDLING HERE
 const createAndSaveUrl = (originalUrl) => {
-  const url = new Url({
-    original_url: originalUrl,
-    short_url: 'TEST',
-  });
+  return Url.count({})
+    .then((count) => {
+      const url = new Url({
+        original_url: originalUrl,
+        short_url: count + 1,
+      });
 
-  url.save();
+      return url.save();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 // TODO: FINISH THIS FUNCTION
-const getOriginalUrl = () => {};
+const getOriginalUrl = (shortUrl) => {
+  return Url.find({ short_url: shortUrl })
+    .then((urlObj) => {
+      return urlObj[0]['original_url'];
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 
 const port = process.env.PORT || 3000;
 
@@ -54,14 +67,25 @@ app.get('/api/hello', (req, res) => {
 
 app.get('/api/shorturl/:url', (req, res) => {
   const url = req.params.url;
-  console.log(url);
-  res.json({ test: 'Get API works!' });
+  getOriginalUrl(url)
+    .then((originalUrl) => {
+      res.redirect(originalUrl);
+      // res.json({ test: 'Get API works!' });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 app.post('/api/shorturl', (req, res) => {
   const url = req.body.url;
-  console.log(url);
-  res.json({ test: 'Post API works!' });
+  createAndSaveUrl(url)
+    .then(() => {
+      return res.json({ test: 'Post API works!' });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
 app.listen(port, () => {
