@@ -31,6 +31,10 @@ const createAndSaveUrl = (originalUrl) => {
         throw err;
       }
 
+      if (!originalUrl.startsWith('http') && !originalUrl.startsWith('https')) {
+        throw err;
+      }
+
       const url = new Url({
         original_url: originalUrl,
         short_url: count + 1,
