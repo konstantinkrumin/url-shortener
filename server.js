@@ -33,12 +33,14 @@ const createAndSaveUrl = (originalUrl) => {
 
       return url.save();
     })
+    .then((savedObj) => {
+      return savedObj;
+    })
     .catch((err) => {
       console.log(err);
     });
 };
 
-// TODO: FINISH THIS FUNCTION
 const getOriginalUrl = (shortUrl) => {
   return Url.find({ short_url: shortUrl })
     .then((urlObj) => {
@@ -70,7 +72,6 @@ app.get('/api/shorturl/:url', (req, res) => {
   getOriginalUrl(url)
     .then((originalUrl) => {
       res.redirect(originalUrl);
-      // res.json({ test: 'Get API works!' });
     })
     .catch((err) => {
       console.log(err);
@@ -80,8 +81,8 @@ app.get('/api/shorturl/:url', (req, res) => {
 app.post('/api/shorturl', (req, res) => {
   const url = req.body.url;
   createAndSaveUrl(url)
-    .then(() => {
-      return res.json({ test: 'Post API works!' });
+    .then((result) => {
+      return res.json({ original_url: result.original_url, short_url: result.short_url });
     })
     .catch((err) => {
       console.log(err);
