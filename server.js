@@ -26,6 +26,11 @@ const Url = mongoose.model('url', urlSchema);
 const createAndSaveUrl = (originalUrl) => {
   return Url.count({})
     .then((count) => {
+      const urlCheck = new URL(originalUrl);
+      if (urlCheck.code === 'ERR_INVALID_URL') {
+        throw err;
+      }
+
       const url = new Url({
         original_url: originalUrl,
         short_url: count + 1,
@@ -34,10 +39,10 @@ const createAndSaveUrl = (originalUrl) => {
       return url.save();
     })
     .then((savedObj) => {
-      return savedObj;
+      return { original_url: savedObj.original_url, short_url: savedObj.short_url };
     })
-    .catch((err) => {
-      console.log(err);
+    .catch((errObj) => {
+      return { error: 'invalid url' };
     });
 };
 
@@ -73,8 +78,8 @@ app.get('/api/shorturl/:url', (req, res) => {
     .then((originalUrl) => {
       res.redirect(originalUrl);
     })
-    .catch((err) => {
-      console.log(err);
+    .catch(() => {
+      res.json({ error: 'No such URL found' });
     });
 });
 
@@ -82,7 +87,7 @@ app.post('/api/shorturl', (req, res) => {
   const url = req.body.url;
   createAndSaveUrl(url)
     .then((result) => {
-      return res.json({ original_url: result.original_url, short_url: result.short_url });
+      return res.json(result);
     })
     .catch((err) => {
       console.log(err);
