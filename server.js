@@ -72,10 +72,6 @@ app.get('/', (req, res) => {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
-app.get('/api/hello', (req, res) => {
-  res.json({ greeting: 'hello API' });
-});
-
 app.get('/api/shorturl/:url', (req, res) => {
   const url = req.params.url;
   getOriginalUrl(url)
